@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${place.name} + ' Detayı | Rehber Platformu'"></title>
+    <style> /* Index.html'deki stilin devamı */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background: #333; color: white; padding: 15px; text-align: center; }
+        .container { display: flex; max-width: 1200px; margin: 20px auto; }
+        .sidebar { width: 250px; padding: 20px; background: #e0e0e0; margin-right: 20px; border-radius: 8px; }
+        .main-content { flex-grow: 1; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .comment-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ccc; }
+        .comment-card { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px; background: #f9f9f9; }
+        .comment-form textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;}
+        .comment-form button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/" style="color: white; text-decoration: none;">Rehber Platformu</a></h1>
+        <div> 
+            <div sec:authorize="!isAuthenticated()"> 
+                <a href="/login" style="color: lightgreen; margin-left: 10px;">Giriş</a>
+                <a href="/register" style="color: lightyellow; margin-left: 10px;">Kayıt</a>
+            </div>
+            
+            <div sec:authorize="isAuthenticated()">
+                <span style="margin-right: 10px;">
+                    Hoşgeldin, <span sec:authentication="name"></span>
+                </span>
+                <a href="/logout" style="color: salmon; margin-left: 10px;">Çıkış</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Bölgeler</h3>
+            <a href="/">Tüm Bölgeler</a>
+            <a th:each="region : ${regions}" 
+               th:href="@{/region/{id}(id=${region.id})}" 
+               th:text="${region.name}">Bölge Adı</a>
+        </aside>
+
+        <main class="main-content">
+            <h2 th:text="${place.name}">Yer Adı</h2>
+            <p><strong>Bölge:</strong> <span th:text="${place.region.name}"></span>, <strong>Şehir:</strong> <span th:text="${place.locationCity}"></span></p>
+            
+            <h3>Hakkında</h3>
+            <p th:text="${place.description}"></p>
+            
+            <h3>Ulaşım Bilgisi</h3>
+            <p th:text="${place.transportation}"></p>
+
+            <section id="comments" class="comment-section">
+                <h3>Ziyaretçi Yorumları (<span th:text="${place.comments.size()}"></span>)</h3>
+
+                <div sec:authorize="isAuthenticated()" class="comment-form">
+                    <h4>Yorumunu Ekle</h4>
+                    <form th:action="@{/place/{id}/comment(id=${place.id})}" method="post">
+                        <textarea name="content" placeholder="Yorumunuz..." required></textarea>
+                        <input type="text" name="imageUrl" placeholder="İsteğe Bağlı Resim URL'si">
+                        <button type="submit">Yorumu Gönder</button>
+                    </form>
+                </div>
+                <div sec:authorize="!isAuthenticated()" style="padding: 10px; background: #fff3cd; border-radius: 4px; margin-bottom: 15px;">
+                    <p>Yorum eklemek için lütfen <a href="/login">giriş yapın</a>.</p>
+                </div>
+                
+                <div th:if="${place.comments.isEmpty()}">
+                    <p>Henüz yorum yapılmamış.</p>
+                </div>
+                <div th:each="comment : ${place.comments}" class="comment-card">
+                    <p><strong>Kullanıcı:</strong> <span th:text="${comment.user.username}"></span></p>
+                    <p th:text="${comment.content}"></p>
+                    <div th:if="${comment.imageUrl != null and comment.imageUrl != ''}">
+                        <img th:src="${comment.imageUrl}" alt="Yorum Resmi" style="max-width: 100%; height: auto; margin-top: 10px; border-radius: 4px;">
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+</body>
+</html>

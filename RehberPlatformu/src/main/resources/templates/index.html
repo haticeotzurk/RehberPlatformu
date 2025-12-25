@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' | Rehber Platformu'"></title>
+    <style> /* Basit bir CSS yapısı */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background: #333; color: white; padding: 15px; text-align: center; }
+        .container { display: flex; max-width: 1200px; margin: 20px auto; }
+        .sidebar { width: 250px; padding: 20px; background: #e0e0e0; margin-right: 20px; border-radius: 8px; }
+        .main-content { flex-grow: 1; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .place-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; background: #fff; }
+        .place-card h4 a { text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+<header>
+    <h1><a href="/" style="color: white; text-decoration: none;">Rehber Platformu</a></h1>
+    <div>
+        <div sec:authorize="!isAuthenticated()"> 
+            <a href="/login" style="color: lightgreen; margin-left: 10px;">Giriş</a>
+            <a href="/register" style="color: lightyellow; margin-left: 10px;">Kayıt</a>
+        </div>
+        
+        <div sec:authorize="isAuthenticated()">
+            <span style="margin-right: 10px;">
+                Hoşgeldin, <span sec:authentication="name"></span> </span>
+            <a href="/logout" style="color: salmon; margin-left: 10px;">Çıkış</a>
+        </div>
+    </div>
+</header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Bölgeler</h3>
+            <a href="/">Tüm Bölgeler</a>
+            <a th:each="region : ${regions}" 
+               th:href="@{/region/{id}(id=${region.id})}" 
+               th:text="${region.name}">Bölge Adı</a>
+        </aside>
+
+        <main class="main-content">
+            <h2 th:text="${pageTitle}">Keşfedilecek Yerler</h2>
+            
+            <div th:if="${places.isEmpty()}">
+                <p>Bu alanda listelenecek bir yer bulunmamaktadır.</p>
+            </div>
+
+            <div th:each="place : ${places}" class="place-card">
+                <h4>
+                    <a th:href="@{/place/{id}(id=${place.id})}" th:text="${place.name}">Yer Adı</a>
+                </h4>
+                <p th:text="${place.description}"></p>
+                <p><strong>Şehir:</strong> <span th:text="${place.locationCity}"></span> | 
+                   <strong>Bölge:</strong> <span th:text="${place.region.name}"></span></p>
+                <p>
+                    <a th:href="@{/place/{id}(id=${place.id})}">Detayları Gör</a>
+                </p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

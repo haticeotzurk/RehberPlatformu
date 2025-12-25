@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol | Rehber Platformu</title>
+    <style> /* Basit bir stil */
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .register-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 300px; text-align: center; }
+        .register-box input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .register-box button { width: 100%; background-color: #28a745; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .error-message { color: red; margin-bottom: 15px; border: 1px solid red; padding: 10px; border-radius: 4px; background: #ffebeb; }
+    </style>
+</head>
+<body>
+    <div class="register-box">
+        <h2>Kayıt Ol</h2>
+
+        <div th:if="${errorMessage}" class="error-message">
+            <p th:text="${errorMessage}">Hata mesajı.</p>
+        </div>
+
+        <form method="POST" th:action="@{/register}" th:object="${user}">
+            <input type="text" th:field="*{username}" placeholder="Kullanıcı Adı" required>
+            <input type="password" th:field="*{password}" placeholder="Şifre" required>
+            
+            <input type="hidden" th:field="*{role}" value="USER"> 
+            
+            <button type="submit">Kayıt Ol</button>
+        </form>
+        
+        <p style="margin-top: 15px;">
+            Zaten hesabınız var mı? <a href="/login">Giriş Yapın</a>
+        </p>
+    </div>
+</body>
+</html>
