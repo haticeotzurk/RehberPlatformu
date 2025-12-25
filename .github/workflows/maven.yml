@@ -1,0 +1,25 @@
+[cite_start]name: CI - Maven Derleme Süreci [cite: 43]
+
+on:
+  push:
+    [cite_start]branches: [ "main", "dev" ] [cite: 46]
+  pull_request:
+    [cite_start]branches: [ "main" ] [cite: 48]
+
+jobs:
+  build:
+    [cite_start]runs-on: ubuntu-latest [cite: 51]
+
+    steps:
+      - name: Depoyu Kontrol Et
+        [cite_start]uses: actions/checkout@v4 [cite: 66, 67]
+
+      - name: JDK 17 Kurulumu
+        [cite_start]uses: actions/setup-java@v4 [cite: 68, 69]
+        with:
+          [cite_start]distribution: 'temurin' [cite: 71]
+          [cite_start]java-version: '17' [cite: 72]
+          [cite_start]cache: maven [cite: 73]
+
+      - name: Maven Test + Build
+        [cite_start]run: mvn -B clean verify [cite: 90]
